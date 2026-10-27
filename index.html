@@ -228,11 +228,11 @@ main{max-width:1600px;margin:0 auto;padding:18px 16px 120px}
     <div class="ctrls">
       <button class="fbtn" id="fToggle" type="button" aria-expanded="false">絞り込み ＋</button>
       <div class="filters" id="filters">
-        <label class="chk"><input type="checkbox" id="fNoimg"> 画像なしも表示</label>
+        <label class="chk" id="wrapNoimg" hidden><input type="checkbox" id="fNoimg"> 画像なしも表示</label>
         <label class="chk"><input type="checkbox" id="fPicked"> 選んだものだけ</label>
         <label class="chk keepchk"><input type="checkbox" id="fKeep"> キープだけ</label>
         <label class="chk" id="wrapNew" hidden><input type="checkbox" id="fNew"> 新着だけ</label>
-        <label class="chk"><input type="checkbox" id="fCheck"> 要確認だけ</label>
+        <label class="chk" id="wrapCheck" hidden><input type="checkbox" id="fCheck"> 要確認だけ</label>
         <label class="chk" id="wrapOver" hidden><input type="checkbox" id="fOver"> <span id="overLabel">点数をこえた人だけ</span></label>
         <label class="chk" id="wrapOut" hidden><input type="checkbox" id="fOut"> 除外したものも表示</label>
         <label class="chk selchk" id="wrapSel" hidden><input type="checkbox" id="fSel"> 選考で選ばれた作品</label>
@@ -529,11 +529,14 @@ judgeSel.onchange = () => {
   render();
 };
 function hostUI(){
+  // 審査外・要確認・画像なしを見るのは運営（#host）だけ。審査員は審査する作品だけを見る【本人確認済 10/27】
+  $("wrapNoimg").hidden = !isHost();
+  $("wrapCheck").hidden = !isHost();
   $("wrapOut").hidden = !isHost();
   $("wrapOver").hidden = !isHost() || !MAX_PER;
   $("wrapSel").hidden = !isHost() || !ENTRIES.some(e => e.selBy.length || e.awardBy.length);
   $("btnVerdict").hidden = !isHost();
-  if (!isHost()) { $("fOut").checked = false; $("fOver").checked = false; $("fSel").checked = false; }
+  if (!isHost()) { $("fOut").checked = false; $("fOver").checked = false; $("fSel").checked = false; $("fNoimg").checked = false; $("fCheck").checked = false; }
 }
 
 /* ---- 絞り込みと並び替え ---- */
