@@ -1,0 +1,1205 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>審査室</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f5f0; --card:#fff; --ink:#1e1b18; --muted:#6b645c; --line:#e3ddd2;
+  --rec:#e0483e;
+  --shadow:0 1px 2px rgba(30,27,24,.06),0 6px 18px rgba(30,27,24,.06);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14120f; --card:#1f1c18; --ink:#ece7df; --muted:#a79e92; --line:#302b24;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#14120f; --card:#1f1c18; --ink:#ece7df; --muted:#a79e92; --line:#302b24;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Zen Kaku Gothic New',system-ui,sans-serif;font-weight:500;-webkit-font-smoothing:antialiased}
+button,select,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+
+/* ヘッダー */
+header{position:sticky;top:0;z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.hwrap{max-width:1600px;margin:0 auto;padding:14px 16px 10px;display:flex;flex-direction:column;gap:10px}
+.brow{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap}
+h1{font-family:'Yusei Magic',sans-serif;font-weight:400;font-size:26px;margin:0;letter-spacing:.01em}
+h1 .sub{font-family:'Zen Kaku Gothic New';font-weight:500;font-size:13px;color:var(--muted);margin-left:12px}
+.count{margin-left:auto;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.stamp{font-size:12px;font-weight:700;color:var(--rec);border:1px solid var(--rec);border-radius:999px;padding:3px 12px;font-variant-numeric:tabular-nums}
+.votebtn{border:2px solid var(--rec);background:var(--rec);color:#fff;border-radius:999px;padding:5px 18px;font-size:13px;font-weight:900;white-space:nowrap}
+.votebtn[data-on="1"]{background:transparent;color:var(--rec)}
+.cmtbtn{border:2px solid #7b4fd8;background:#7b4fd8;color:#fff;border-radius:999px;padding:5px 18px;font-size:13px;font-weight:900;white-space:nowrap}
+.cmtbtn[data-on="1"]{background:transparent;color:#7b4fd8}
+#commentArea{display:flex;flex-direction:column;gap:14px;max-width:920px;margin:0 auto}
+#commentArea[hidden],.grid[hidden]{display:none}
+.cmt{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+.cmt img{width:100%;border-radius:10px;display:block;background:#000}
+.cmt .clabel{font-weight:900;font-size:16px;color:#7b4fd8}
+.cmt .cau{font-size:13px;color:var(--muted);margin:4px 0 6px}
+.cmt .cau a{color:var(--muted)}
+.cmt textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);margin-top:8px;resize:vertical;font-size:14px;line-height:1.6}
+.cmt.empty{display:block;opacity:.7}
+@media (max-width:640px){.cmt{grid-template-columns:1fr;padding:12px}.cmt img{max-height:38vh;object-fit:contain}}
+.ctrls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fbtn{display:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 14px;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);max-width:100%;overflow-x:auto;scrollbar-width:none}
+.seg::-webkit-scrollbar{display:none}
+.seg button{border:0;background:transparent;padding:6px 14px;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap;flex:0 0 auto}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.seg button .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.chk{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px}
+.chk input{accent-color:var(--rec)}
+.chk.keepchk{border-color:#c79a2e;color:#a87f14}
+.chk.selchk{border-color:#7b4fd8;color:#7b4fd8}
+.selrow{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;font-size:11px;margin-top:2px}
+.selrow .sv{background:var(--ink);color:var(--bg);border-radius:999px;padding:2px 8px;font-weight:900}
+.selrow .sw{color:var(--muted);font-weight:700}
+.selrow .sa{background:#7b4fd8;color:#fff;border-radius:999px;padding:2px 8px;font-weight:700}
+select,.search{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px}
+.search{min-width:160px}
+.who{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+
+/* グリッド */
+main{max-width:1600px;margin:0 auto;padding:18px 16px 120px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;position:relative}
+.card .ph{position:relative;aspect-ratio:16/10;background:#000;overflow:hidden;cursor:zoom-in}
+.card .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.card .ph.noimg{display:flex;align-items:center;justify-content:center;background:var(--line);color:var(--muted);font-size:13px;cursor:default}
+.badges{position:absolute;left:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 48px)}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.62);color:#fff;backdrop-filter:blur(2px)}
+.badge.av{color:#1e1b18}
+.pickmark{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:50%;background:var(--rec);color:#fff;display:none;align-items:center;justify-content:center;font-weight:900;font-size:15px;font-variant-numeric:tabular-nums}
+.keepmark{position:absolute;right:8px;bottom:8px;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,.6);color:#ffd45e;display:none;align-items:center;justify-content:center;font-size:14px;line-height:1}
+.card.picked{outline:3px solid var(--rec);outline-offset:-3px}
+.card.picked .pickmark{display:flex}
+.card.kept{outline:3px solid #c79a2e;outline-offset:-3px}
+.card.kept .keepmark{display:flex}
+.card.kept.picked{outline-color:var(--rec)}
+.meta{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.meta .txt{font-size:13px;line-height:1.5;max-height:3em;overflow:hidden}
+.meta .row{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.meta .row .au{font-weight:700;color:var(--ink)}
+.acts{display:flex;gap:8px;margin-top:2px}
+.acts button,.acts a{flex:1;text-align:center;border:1px solid var(--line);background:transparent;border-radius:8px;padding:6px 8px;font-size:12px;font-weight:700;text-decoration:none;color:var(--muted)}
+.acts .pick{border-color:var(--rec);color:var(--rec)}
+.card.picked .acts .pick{background:var(--rec);color:#fff}
+.acts .keep{border-color:#c79a2e;color:#a87f14}
+.card.kept .acts .keep{background:#c79a2e;color:#fff;border-color:#c79a2e}
+.acts .detail{flex:0 0 auto}
+.card.excluded{opacity:.45}
+.card.excluded .ph{filter:grayscale(1)}
+.vd{display:flex;gap:6px;margin-top:2px}
+.vd button{flex:1;border:1px solid var(--line);background:transparent;border-radius:8px;padding:5px 6px;font-size:12px;font-weight:700;color:var(--muted)}
+.vd button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.badge.warn{background:#b06a10}
+.awrow{display:flex;gap:4px;align-items:center;margin-top:4px}
+.awrow span{font-size:11px;color:var(--muted);white-space:nowrap}
+.awrow button{flex:1;border:1px solid #7b4fd8;background:transparent;border-radius:8px;padding:4px 2px;font-size:11px;font-weight:700;color:#7b4fd8}
+.awrow button[aria-pressed="true"]{background:#7b4fd8;color:#fff}
+
+/* 詳細 */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(10,8,6,.86);display:none;align-items:center;justify-content:center;padding:16px}
+.modal[data-open="1"]{display:flex}
+.mbox{background:var(--card);border-radius:16px;max-width:1200px;width:100%;max-height:92vh;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(280px,.9fr);overflow:hidden}
+.mimg{background:#000;display:flex;align-items:center;justify-content:center;position:relative;min-height:320px}
+.mimg img{max-width:100%;max-height:92vh;object-fit:contain;display:block}
+.nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.5);color:#fff;border:0;width:40px;height:56px;font-size:20px}
+.nav.prev{left:0;border-radius:0 8px 8px 0}.nav.next{right:0;border-radius:8px 0 0 8px}
+.mside{padding:18px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+.mside h2{font-family:'Yusei Magic',sans-serif;font-weight:400;font-size:18px;margin:0}
+.mside .txt{font-size:14px;line-height:1.7;white-space:pre-wrap;word-break:break-word}
+.mside dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px;margin:0}
+.mside dt{color:var(--muted)}
+.mside dd{margin:0;font-variant-numeric:tabular-nums;word-break:break-all}
+.memo{width:100%;min-height:76px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);resize:vertical}
+.big{border:0;border-radius:10px;padding:10px;font-weight:900;font-size:14px;background:var(--rec);color:#fff}
+.big.off{background:transparent;color:var(--rec);border:2px solid var(--rec)}
+.big.keepbtn{background:transparent;color:#a87f14;border:2px solid #c79a2e}
+.big.keepbtn[aria-pressed="true"]{background:#c79a2e;color:#fff}
+.linkx{font-size:13px;color:var(--muted)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs img{width:56px;height:56px;object-fit:cover;border-radius:6px;border:2px solid transparent;cursor:pointer}
+.thumbs img[aria-current="true"]{border-color:var(--rec)}
+.hint{font-size:12px;color:var(--muted)}
+.mini{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+
+/* 別の端末で続ける */
+.hobox{background:var(--card);border-radius:16px;max-width:440px;width:100%;max-height:92vh;overflow:auto;padding:18px;display:flex;flex-direction:column;gap:12px}
+.hobox h2{font-family:'Yusei Magic',sans-serif;font-weight:400;font-size:20px;margin:0}
+.hobox section{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.hobox section b{font-size:14px}
+.hocode{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:28px;font-weight:900;letter-spacing:.12em;text-align:center;padding:8px;border:2px dashed var(--line);border-radius:10px;user-select:all}
+#hoQR{display:flex;justify-content:center}
+#hoQR:empty{display:none}
+#hoQR img,#hoQR canvas{background:#fff;padding:8px;border-radius:8px}
+.horow{display:flex;gap:8px}
+.horow input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 10px;font-size:16px;text-transform:uppercase;letter-spacing:.08em}
+.horow .big{padding:8px 14px}
+#hoMsg{color:#b06a10;font-weight:700;margin:0}
+#hoMsg:empty{display:none}
+
+/* 下のバー */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 18px rgba(0,0,0,.08);padding-bottom:env(safe-area-inset-bottom,0)}
+.bwrap{max-width:1600px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.slots{display:flex;gap:5px;flex-wrap:wrap}
+.slot{width:38px;height:38px;border-radius:7px;border:1px dashed var(--line);background:var(--bg);overflow:hidden;position:relative}
+.slot img{width:100%;height:100%;object-fit:cover}
+.slot .n{position:absolute;left:2px;top:1px;font-size:10px;font-weight:900;color:#fff;text-shadow:0 0 3px #000}
+.slots .sep{width:10px}
+.slot:has(.n:not(:empty)){border-color:var(--line)}
+.bar .st{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar .out{margin-left:auto;display:flex;gap:8px}
+.bar .out button{border:1px solid var(--line);background:transparent;border-radius:999px;padding:8px 16px;font-size:13px;font-weight:700}
+.bar .out button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.export{display:none;max-width:1600px;margin:0 auto;padding:0 16px 12px}
+.export[data-open="1"]{display:block}
+.export textarea{width:100%;min-height:140px;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--bg);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+/* 二次審査の点数ボタンと、点ごとの作品数 */
+.scrow{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.scrow button{flex:1 0 18%;min-width:28px;padding:5px 0;border:1px solid var(--line);border-radius:6px;background:transparent;color:inherit;font-size:13px;cursor:pointer}
+.scrow button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+#mAwards .scrow{width:100%}
+.dist{display:flex;gap:4px;font-size:13px}
+.dist span{display:flex;flex-direction:column;align-items:center;min-width:30px;padding:2px 0;border:1px solid var(--line);border-radius:6px}
+.dist b{font-size:10px;font-weight:normal;color:var(--muted)}
+@media (max-width:900px){.mbox{grid-template-columns:1fr;max-height:94vh}.mimg{max-height:46vh}.mimg img{max-height:46vh}}
+
+/* スマホ：ヘッダーと下のバーで画面が埋まってしまうので、絞り込みはボタンでたたむ */
+@media (max-width:640px){
+  .hwrap{padding:10px 12px 8px;gap:8px}
+  h1{font-size:20px}
+  h1 .sub{display:block;margin-left:0;font-size:11px}
+  .brow{gap:8px;align-items:center}
+  .stamp{font-size:11px;padding:2px 10px}
+  .count{margin-left:0;width:100%;font-size:11px;line-height:1.45}
+  .fbtn{display:inline-block}
+  .filters{display:none;width:100%}
+  .filters[data-open="1"]{display:flex}
+  .chk,select,.search{font-size:12px;padding:5px 10px}
+  .search{min-width:0;flex:1}
+  .who{margin-left:0;width:100%;flex-wrap:wrap;gap:6px;font-size:12px;white-space:nowrap}
+  .mini{padding:5px 10px}
+  main{padding:12px 12px 160px}
+  .grid{gap:10px}
+  .bwrap{padding:8px 12px;gap:6px}
+  .bar .st{width:100%;font-size:12px;order:-1}
+  .slots{flex-wrap:nowrap;overflow-x:auto;max-width:100%;min-width:0;scrollbar-width:none}
+  .slots::-webkit-scrollbar{display:none}
+  .slot{width:30px;height:30px;flex:0 0 auto;border-radius:6px}
+  .bar .out{margin-left:0;width:100%;flex-wrap:wrap}
+  .bar .out button{flex:1 1 44%;padding:8px 6px;font-size:12px}
+  .export{padding:0 12px 10px}
+  .export textarea{min-height:110px}
+  .modal{padding:8px}
+  .mbox{max-height:96vh}
+  .mside{padding:12px;gap:10px}
+  .mimg{min-height:0}
+  .mimg img{max-height:38vh}
+  /* スマホでは「選ぶ」「キープ」「担当の賞」を写真のすぐ下に出す（下までスクロールしないと押せないため） */
+  #mPick{order:-3}
+  #mKeep{order:-2}
+  #mAwards{order:-1}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brow">
+      <h1>審査室<span class="sub" id="cname"></span></h1>
+      <div class="stamp" id="stamp"></div>
+      <button class="votebtn" id="voteToggle" type="button" hidden>投票する</button>
+      <button class="cmtbtn" id="cmtToggle" type="button" hidden>一言コメントを書く</button>
+      <div class="count" id="count">—</div>
+    </div>
+    <div class="ctrls">
+      <button class="fbtn" id="fToggle" type="button" aria-expanded="false">絞り込み ＋</button>
+      <div class="filters" id="filters">
+        <label class="chk"><input type="checkbox" id="fNoimg"> 画像なしも表示</label>
+        <label class="chk"><input type="checkbox" id="fPicked"> 選んだものだけ</label>
+        <label class="chk keepchk"><input type="checkbox" id="fKeep"> キープだけ</label>
+        <label class="chk" id="wrapNew" hidden><input type="checkbox" id="fNew"> 新着だけ</label>
+        <label class="chk"><input type="checkbox" id="fCheck"> 要確認だけ</label>
+        <label class="chk" id="wrapOver" hidden><input type="checkbox" id="fOver"> <span id="overLabel">点数をこえた人だけ</span></label>
+        <label class="chk" id="wrapOut" hidden><input type="checkbox" id="fOut"> 除外したものも表示</label>
+        <label class="chk selchk" id="wrapSel" hidden><input type="checkbox" id="fSel"> 選考で選ばれた作品</label>
+        <select id="sort">
+          <option value="new">新しい順</option>
+          <option value="old">古い順</option>
+          <option value="author">投稿者順</option>
+        </select>
+        <input class="search" id="q" type="search" placeholder="本文・投稿者で検索">
+      </div>
+      <div class="who">審査員 <select id="judge"></select>
+        <button class="mini" id="hoBtn" type="button" hidden>別の端末で続ける</button>
+        <button class="mini" id="themeBtn" type="button">ダークにする</button></div>
+    </div>
+    <p class="hint" id="rules" style="margin:0"></p>
+    <p class="hint" id="warnStore" hidden style="margin:0;color:#b06a10">このブラウザでは選んだ内容が保存されません。閉じる前に「選んだ作品を書き出す」でコピーしてください。</p>
+  </div>
+</header>
+
+<main>
+  <div class="grid" id="grid"></div>
+  <section id="commentArea" hidden></section>
+  <p class="hint" id="empty" hidden>条件に合う作品がありません。</p>
+</main>
+
+<div class="modal" id="modal" aria-modal="true" role="dialog">
+  <div class="mbox">
+    <div class="mimg">
+      <button class="nav prev" id="mPrev" aria-label="前の作品">‹</button>
+      <img id="mImg" alt="">
+      <button class="nav next" id="mNext" aria-label="次の作品">›</button>
+    </div>
+    <div class="mside">
+      <h2 id="mAuthor"></h2>
+      <div class="thumbs" id="mThumbs"></div>
+      <div class="txt" id="mText"></div>
+      <dl>
+        <dt>投稿</dt><dd id="mTime"></dd>
+        <dt>枚数</dt><dd id="mCount"></dd>
+        <dt>この人の応募</dt><dd id="mPer"></dd>
+      </dl>
+      <a class="linkx" id="mLink" href="#" target="_blank" rel="noopener">元のポストをXで開く ↗</a>
+      <textarea class="memo" id="mMemo" placeholder="メモ（自分だけに見えます）"></textarea>
+      <div class="awrow" id="mAwards"></div>
+      <button class="big" id="mPick">この作品を選ぶ</button>
+      <button class="big keepbtn" id="mKeep">キープに置く（K）</button>
+      <button class="big off" id="mClose" style="background:transparent;color:var(--muted);border-color:var(--line)">閉じる（Esc）</button>
+      <p class="hint">←→ で前後の作品、S で選ぶ／外す、K でキープ</p>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="hoBox" aria-modal="true" role="dialog">
+  <div class="hobox">
+    <h2>別の端末で続ける</h2>
+    <p class="hint" style="margin:0">PCで選んだ続きをスマホで、のように、ほかの端末に移せます。</p>
+    <section>
+      <b>この端末の続きを、ほかの端末に移す</b>
+      <p class="hint" style="margin:0"><span id="hoJudge"></span>さんの選んだ作品・イチオシ・キープ・メモ・点数をしまって、コードを作ります。コードは7日間使えます。</p>
+      <button class="big" id="hoMake" type="button">引き継ぎコードを作る</button>
+      <div id="hoOut" hidden>
+        <div class="hocode" id="hoCode"></div>
+        <div id="hoQR"></div>
+        <p class="hint" id="hoHow"></p>
+      </div>
+    </section>
+    <section>
+      <b>ほかの端末で作ったコードから続ける</b>
+      <div class="horow"><input id="hoIn" placeholder="8文字のコード" autocomplete="off" autocapitalize="characters" spellcheck="false"><button class="big" id="hoTake" type="button">読み込む</button></div>
+    </section>
+    <p class="hint" id="hoMsg"></p>
+    <button class="big off" id="hoClose" type="button">閉じる</button>
+  </div>
+</div>
+
+<div class="bar">
+  <div class="bwrap">
+    <div class="slots" id="slots"></div>
+    <div class="st" id="pickState">0 / 5 点</div>
+    <div class="out">
+      <button id="btnVerdict" hidden>判定を書き出す</button>
+      <button id="btnExport">選んだ作品を書き出す</button>
+      <button id="btnRestore">貼り付けから復元</button>
+      <button id="btnCopy" class="primary">コピー</button>
+      <button id="btnSend" class="primary" hidden>運営に送る</button>
+    </div>
+  </div>
+  <div class="export" id="exportBox">
+    <textarea id="exportText" placeholder="ここに前の版で書き出したテキストを貼り付けて「貼り付けから復元」を押すと、選んだ作品・キープ・担当の賞が戻ります"></textarea>
+  </div>
+</div>
+
+<script>
+// このフォトコンの設定。審査ツール（審査ツール.html）と統合（merge.js）がここを読む。
+// 回収（collect_snippet.js）はブラウザで動かすので、先頭の3つの値を手で合わせること。
+// 別のフォトコンに使うときは、このファイルを書き換える（ツール本体は触らない）。
+const CONTEST = {
+  name: "VRCちゃこフォトコン",
+  sub: "@Light Aquarium",
+  tag: "#VRCちゃこフォトコン",
+  // 告知ポストと主催。主催の投稿（告知のツリーなど）は応募に数えない
+  announceId: "2112846360986955827",
+  announceUrl: "https://x.com/GumuGoomy/status/2112846360986955827",
+  organizer: "GumuGoomy",
+  announceMedia: ["HU_UM2dbQAAL3F6"],          // 告知ポストの画像。引用した応募に混ざるので外す
+  announceText: /VRCちゃこフォトコン|Light Aquarium/,   // 引用カードの文字で告知かを見分ける
+  operator: "VRChat_Pucchii",                  // 運営（データを集めて審査室を管理する人）
+  storeKey: "chako",                           // ブラウザ保存の名前。ほかのフォトコンの審査室と混ざらないように分ける
+  // 応募のルール（告知ポストより）
+  entryStart: "2026-10-27 00:00",
+  entryDeadline: "2026-11-24 23:59",
+  quoteRequired: true,                         // 告知の引用＋タグ＋作品。引用なしは審査外
+  maxPerPerson: 5,                             // 1人5点まで（1ポスト1点。複数枚は組写真として1点）
+  multiImageIsOne: true,
+  rulesNote: "指定ワールド（Light Aquarium）内で撮ったものに限ります。ワールドは投稿だけでは分からないので、見て判断してください",
+  // 審査員【本人確認済 10/27】
+  //   あきなき @AkiNaki_VRChat／相川お手上げ @aikawaoteage／ぷっちー @VRChat_Pucchii。ちゃこさんは主催特別賞を選ぶ
+  judges: ["あきなき", "相川お手上げ", "ぷっちー", "ちゃこ"],   // 最初に出る名前が一次審査で選ぶ人になるように、ちゃこさんは最後
+  // 判定（応募として扱う／応募でない）のボタンが出る人。URLの末尾に #host【本人確認済 10/27：ちゃこさんとぷっちーだけ】
+  //   ワールドは指定のもので撮った前提で全部登録し、怪しいものだけこの2人が外す
+  hosts: ["ぷっちー", "ちゃこ"],
+  // 一次審査（審査要領.md）：ちゃこさん以外が5〜10点を選び、その中からイチオシを1点【本人確認済 10/27 要領より】
+  minPick: 5,
+  maxPick: 10,
+  noPick: ["ちゃこ"],                           // 一次審査で選ばない人（見る・キープ・担当の賞は使える）
+  awards: {                                    // 選ぶ点数とは別に、その人だけが持つ賞。needsPick は選んだ作品の中から選ぶもの
+    "ちゃこ": [{key: "special", label: "主催特別賞", short: "特別賞"}],
+    "あきなき": [{key: "ichioshi", label: "イチオシ", short: "イチオシ", needsPick: true}],
+    "相川お手上げ": [{key: "ichioshi", label: "イチオシ", short: "イチオシ", needsPick: true}],
+    "ぷっちー": [{key: "ichioshi", label: "イチオシ", short: "イチオシ", needsPick: true}]
+  },
+  // 二次審査（審査要領.md）：一次で選ばれた作品を、ちゃこさんを含む4人で1作品1〜10ptつける
+  //   hideAuthor：点をつけるあいだ投稿者名を隠す【本人確認済 10/27 ちゃこさん：「隠せたほうがより好ましい」】
+  round2: {type: "score", min: 1, max: 10, hideAuthor: true},
+  // 「運営に送る」ボタンの送り先（ぷっちーのスプレッドシートの Apps Script。apps_script\Code.gs）【本人確認済 10/27 案A】
+  //   空のあいだはボタンが出ず、今までどおり「コピー」して送ってもらう。「別の端末で続ける」もこの受け取り口を使う
+  //   siteUrl：審査員に渡す審査室のURL（引き継ぎのQRに入れる）。空ならQRは出ず、コードだけ出す
+  siteUrl: "https://pucchii1014.github.io/chako-photocon/",   // 【本人確認済 10/27 公開OK】
+  sendUrl: "https://script.google.com/macros/s/AKfycby9MHADAUoxvo08KyNHScgvqOByTVb-uTqcx0eDNaTZGhnQANOgNxt9WvCtbonS2kYQHA/exec",
+  prizeSlots: {grand: 1, excellent: 3, honorable: 5},   // 最優秀・優秀・佳作の数
+  excludeAccounts: ["GumuGoomy"],              // この人の投稿は審査外（主催）。審査員の応募の扱いは【未定】
+  prizes: "最優秀賞1（BOOTHギフト3000円）／優秀賞3（2000円）／佳作5（1000円）／主催特別賞（1000円）"
+};
+if (typeof module !== "undefined") module.exports = CONTEST; else window.CONTEST = CONTEST;
+</script>
+
+<script>
+// 画面の明るさ：ふだんは端末の設定に合わせる。ボタンで切り替えると、この端末に覚えておく（データの読み込みより先にして、ちらつかないように）
+function applyTheme(t){ if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme; }
+try { applyTheme(JSON.parse(localStorage.getItem(((window.CONTEST || {}).storeKey || "pc") + ":theme"))); } catch(_) {}
+// データの読み込み：配布ファイル版は window.ENTRIES が埋め込み済み。
+// サイト版（GitHub Pages）は同じ場所の entries.json を毎回読み直す。
+if (window.ENTRIES) { start(); }
+else {
+  fetch("entries.json?" + Date.now())
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(d => { window.ENTRIES = d; start(); })
+    .catch(err => {
+      document.getElementById("grid").innerHTML =
+        `<p class="hint">応募データ（entries.json）を読み込めませんでした：${err.message}<br>ページを開き直しても直らないときは、運営（@VRChat_Pucchii）に知らせてください。</p>`;
+    });
+}
+
+function start(){
+const C = window.CONTEST;
+document.title = C.name + " 審査室";
+document.getElementById("cname").textContent = C.name + " " + (C.sub || "");
+// 保存の名前はフォトコンごとに分ける（同じサイトの別の審査室と混ざらないように）
+const SK = (C.storeKey || "pc") + ":";
+const MAX_PICK = C.maxPick;
+const MIN_PICK = C.minPick || 0;
+const JUDGES = C.judges;
+const canPick = () => !(C.noPick || []).includes(judge);   // 一次審査で選ばない人（主催など）
+const AWARDS = C.awards || {};          // その審査員だけが持つ賞（選ぶ点数とは別枠。1つの賞につき1点）
+const TAG = C.tag;
+const ENTRY_START = C.entryStart, ENTRY_DEADLINE = C.entryDeadline;
+const MAX_PER = C.maxPerPerson || 0;    // 1人が応募できる点数。こえた人は主催が見てどれを外すか決める
+// 投票（選考のあと、みんなの選出から順位を付ける）。候補はデータの vote_pool で入る
+// 1＝通常の投票（候補から1〜5位）／2＝同点の作品だけで1つ選ぶ再投票
+const VOTE_ROUND = 1;
+const RV = VOTE_ROUND === 2;
+const VOTE_MAX = RV ? 1 : 5;
+// 二次審査を点数でやるとき（C.round2）：候補の作品ぜんぶに審査員みんなが min〜max pt をつける。votes は {id: {pt}}
+const SCORE = !!(C.round2 && C.round2.type === "score");
+const S_MIN = SCORE ? C.round2.min : 0, S_MAX = SCORE ? C.round2.max : 0;
+const S_RANGE = SCORE ? Array.from({length: S_MAX - S_MIN + 1}, (_, i) => S_MIN + i) : [];
+const VOTE_KEY = SCORE ? "score2:" : RV ? "vote2:" : "vote:";
+const VOTE_HIDE_AUTHOR = SCORE ? C.round2.hideAuthor !== false : true;    // 投票中だけ投稿者名を隠す。URLにも名前が入るので /i/status/<id> の形にする
+const hideName = () => voteMode && VOTE_HIDE_AUTHOR;
+const anonUrl = e => "https://x.com/i/status/" + e.id;
+const same = (a, b) => (a || "").toLowerCase() === (b || "").toLowerCase();
+const ENTRIES = (window.ENTRIES || []).map(e => {
+  const reasons = [];
+  if (!e.image_count) reasons.push("画像なし（動画かもしれません）");
+  if (!(e.hashtags||[]).includes(TAG)) reasons.push("コンテストのタグなし");
+  const isJudge = (C.excludeAccounts || []).some(h => same(h, e.author));
+  const noQuoteOut = C.quoteRequired && !e.quotes_announcement;
+  const t = e.posted_at_jst || "";
+  const lateOut = t > ENTRY_DEADLINE;
+  const earlyOut = t < ENTRY_START;
+  // 写真もタグもない投稿は応募ではない（審査員のあいさつや感想の引用など）
+  const chatter = !e.image_count && !(e.hashtags||[]).includes(TAG);
+  const autoOut = isJudge || noQuoteOut || lateOut || earlyOut || chatter;
+  if (isJudge) reasons.push("主催の投稿（審査対象外）");
+  if (noQuoteOut) reasons.push("告知ポストの引用なし（引用＋タグで応募になります）");
+  if (lateOut) reasons.push(`締切後の投稿（締切は${ENTRY_DEADLINE}）`);
+  if (earlyOut) reasons.push(`募集開始前の投稿（開始は${ENTRY_START}）`);
+  return {...e, autoOut, isJudge, lateOut, earlyOut, noQuoteOut, chatter, inPool: !!e.vote_pool,
+          selBy: e.sel_by || [], awardBy: e.award_by || [], reasons, needsCheck: reasons.length > 0};
+});
+const img = (u, size) => u ? u + "?format=jpg&name=" + size : "";
+
+let judge = load("judge") || JUDGES[0];
+let picks = load("picks:" + judge) || {};      // {id: {order, memo}}
+let awards = load("awards:" + judge) || {};    // {賞のkey: 作品のid}
+// 投票：選考が終わったあと、みんなの選出（vote_pool）から1〜5位を付ける。
+// 選ぶ仕組みは選考と同じものを使い回す（curSel / curMax で切り替える）
+let votes = load(VOTE_KEY + judge) || {};       // {id: {order}}
+const HAS_POOL = ENTRIES.some(e => e.inPool);
+let voteMode = false;
+// 一言コメント（10/21〜23）：賞が決まった作品にはデータの prize_key が入る（set_prizes.js で書き込む）
+// 書いた内容は各自のブラウザに保存され、「コピー」でテキストにして主催に送ってもらう
+const HAS_PRIZE = ENTRIES.some(e => e.prize_key);
+let commentMode = false;
+let comments = load("comment:" + judge) || {};   // {prize_key: 本文}
+const curSel = () => voteMode ? votes : picks;
+const curMax = () => voteMode ? VOTE_MAX : (canPick() ? MAX_PICK : 0);
+const selKey = () => (voteMode ? VOTE_KEY : "picks:") + judge;
+// キープ：枚数の制限がない仮置き棚。全部見ながら気になったものを置いて、あとでこの中から選ぶ
+let keeps = load("keeps:" + judge) || [];      // [id, ...]（置いた順）
+const isKept = id => keeps.includes(id);
+function toggleKeep(id){
+  const i = keeps.indexOf(id);
+  if (i >= 0) keeps.splice(i, 1); else keeps.push(id);
+  save("keeps:" + judge, keeps);
+  render();
+  if ($("modal").dataset.open === "1") fillModal();
+}
+const myAwards = () => AWARDS[judge] || [];
+// この作品に出す「担当の賞」のボタン（イチオシなど needsPick の賞は、選んだ作品にだけ出す）
+function awardsFor(e){ return myAwards().filter(a => !a.needsPick || picks[e.id]); }
+function awardOf(e){ return myAwards().find(a => awards[a.key] === e.id) || null; }
+function toggleAward(key, id){
+  awards[key] = awards[key] === id ? undefined : id;
+  if (!awards[key]) delete awards[key];
+  save("awards:" + judge, awards);
+  render();
+  if ($("modal").dataset.open === "1") fillModal();
+}
+// 判定：データに書き戻された entry_verdict を土台に、この端末での判定を上書き
+let verdicts = Object.fromEntries(ENTRIES.filter(e => e.entry_verdict).map(e => [e.id, e.entry_verdict]));
+Object.assign(verdicts, load("verdict") || {});  // {id: "in" | "out"}（主催だけが付ける）
+// 外した理由（「ワールドが違う」など）。データに書き戻された verdict_note を土台にする
+let vnotes = Object.fromEntries(ENTRIES.filter(e => e.verdict_note).map(e => [e.id, e.verdict_note]));
+Object.assign(vnotes, load("vnote") || {});
+// 審査対象から外れるか：主催の判定が最優先。判定がなければ自動の除外（引用なし・期間外・主催の投稿）を見る
+function isOut(e){
+  if (verdicts[e.id] === "out") return true;
+  if (verdicts[e.id] === "in") return false;
+  return !!e.autoOut;
+}
+// 1人の応募点数：審査外を除いて投稿の古い順に数える。こえた人は運営が見て「応募でない」を付ける
+let perAuthor = {};
+function countPer(){
+  perAuthor = {};
+  ENTRIES.filter(e => !isOut(e)).sort((a,b) => a.posted_at_jst.localeCompare(b.posted_at_jst)).forEach(e => {
+    const k = (e.author || "").toLowerCase();
+    (perAuthor[k] = perAuthor[k] || []).push(e.id);
+  });
+}
+const perOf = e => { const l = perAuthor[(e.author || "").toLowerCase()] || []; return {n: l.indexOf(e.id) + 1, total: l.length}; };
+const isOver = e => MAX_PER > 0 && perOf(e).total > MAX_PER;
+// 判定は運営だけ。URLの末尾に #host が付いているときだけ出す
+const isHost = () => (C.hosts || [C.host]).includes(judge) && location.hash === "#host";
+let view = [];                                  // 表示中の並び
+let cur = -1;                                   // 詳細で開いている位置
+
+function load(k){ try { return JSON.parse(localStorage.getItem(SK + k)); } catch(_) { return null; } }
+function save(k,v){ try { localStorage.setItem(SK + k, JSON.stringify(v)); } catch(_) {} }
+
+/* ---- 審査員 ---- */
+const judgeSel = document.getElementById("judge");
+JUDGES.forEach(j => judgeSel.append(new Option(j, j)));
+judgeSel.value = judge;
+judgeSel.onchange = () => {
+  judge = judgeSel.value; save("judge", judge);
+  picks = load("picks:" + judge) || {};
+  awards = load("awards:" + judge) || {};
+  keeps = load("keeps:" + judge) || [];
+  votes = load(VOTE_KEY + judge) || {};
+  comments = load("comment:" + judge) || {};
+  hostUI();
+  if (commentMode) renderComments();
+  render();
+};
+function hostUI(){
+  $("wrapOut").hidden = !isHost();
+  $("wrapOver").hidden = !isHost() || !MAX_PER;
+  $("wrapSel").hidden = !isHost() || !ENTRIES.some(e => e.selBy.length || e.awardBy.length);
+  $("btnVerdict").hidden = !isHost();
+  if (!isHost()) { $("fOut").checked = false; $("fOver").checked = false; $("fSel").checked = false; }
+}
+
+/* ---- 絞り込みと並び替え ---- */
+const $ = id => document.getElementById(id);
+["fNoimg","fPicked","fKeep","fOver","fSel","fCheck","fOut","fNew"].forEach(id => $(id).onchange = render);
+$("sort").onchange = render;
+$("q").oninput = render;
+
+if (MAX_PER) $("overLabel").textContent = `${MAX_PER}点をこえた人だけ`;
+
+function filtered(){
+  const q = $("q").value.trim().toLowerCase();
+  // 投票中は候補だけを並べる（ほかの絞り込みは効かせない）
+  if (voteMode) {
+    // 名前を隠しているときは投稿者順にしない（同じ人の作品がとなりに並ぶと分かってしまう）
+    const vs = hideName() && $("sort").value === "author" ? "new" : $("sort").value;
+    return ENTRIES.filter(e => e.inPool).sort((a,b) =>
+      vs === "author" ? a.author.localeCompare(b.author) || a.posted_at_jst.localeCompare(b.posted_at_jst)
+      : vs === "old"  ? a.posted_at_jst.localeCompare(b.posted_at_jst)
+      :                 b.posted_at_jst.localeCompare(a.posted_at_jst));
+  }
+  let list = ENTRIES.filter(e => {
+    const kept = isKept(e.id);
+    if ($("fKeep").checked && !kept) return false;
+    if ($("fPicked").checked && !picks[e.id]) return false;
+    // 点数をこえた人だけ：どれを外すか決めるための一覧（運営だけ）
+    if ($("fOver").checked && !isOver(e)) return false;
+    // 選考で選ばれた作品：みんなの選出と担当の賞（運営の確認用）
+    if ($("fSel").checked && !(e.selBy.length || e.awardBy.length)) return false;
+    // 「キープだけ」「選んだものだけ」「選考で選ばれた作品」で見ているときは、ほかの条件で消えないようにする
+    const mine = ($("fKeep").checked && kept) || ($("fPicked").checked && !!picks[e.id]) || $("fSel").checked;
+    if (isOut(e) && !$("fOut").checked && !mine) return false;
+    if ($("fCheck").checked && !e.needsCheck && !isOver(e)) return false;
+    if ($("fNew").checked && !e.isNew) return false;
+    if (!mine && !$("fNoimg").checked && !e.image_count && !$("fCheck").checked) return false;
+    if (q && !((e.text||"").toLowerCase().includes(q) || e.author.toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const s = $("sort").value;
+  // 選考で選ばれた作品を見ているときは、票の多い順（同じなら担当の賞があるほうを先）
+  if ($("fSel").checked) return list.sort((a,b) =>
+    (b.selBy.length - a.selBy.length) || (b.awardBy.length - a.awardBy.length) || a.posted_at_jst.localeCompare(b.posted_at_jst));
+  list.sort((a,b) =>
+    s === "author" ? a.author.localeCompare(b.author) || a.posted_at_jst.localeCompare(b.posted_at_jst)
+    : s === "old"  ? a.posted_at_jst.localeCompare(b.posted_at_jst)
+    :                b.posted_at_jst.localeCompare(a.posted_at_jst));
+  return list;
+}
+
+/* ---- 一覧 ---- */
+function render(){
+  countPer();
+  view = filtered();
+  const grid = $("grid");
+  grid.innerHTML = view.map((e,i) => card(e,i)).join("");
+  $("empty").hidden = view.length > 0;
+  const total = ENTRIES.length, shown = view.length;
+  const noimg = ENTRIES.filter(x => !x.image_count).length;
+  // 写真もタグもない投稿（あいさつ・感想）は数に入れない
+  const auto = k => ENTRIES.filter(x => x[k] && !x.chatter && verdicts[x.id] !== "in").length;
+  const autoQ = auto("noQuoteOut"), autoL = auto("lateOut") + auto("earlyOut"), autoJ = auto("isJudge");
+  const over = Object.values(perAuthor).filter(l => MAX_PER && l.length > MAX_PER).length;
+  $("count").textContent = `表示 ${shown}件 / 全${total}件（画像なし${noimg}件`
+    + (autoQ ? `・引用なしで審査外${autoQ}件` : "") + (autoL ? `・期間外で審査外${autoL}件` : "") + (autoJ ? `・主催の投稿${autoJ}件` : "")
+    + `）・投稿者${new Set(ENTRIES.map(x=>x.author)).size}人`
+    + (isHost() && over ? `・${MAX_PER}点をこえた人${over}人` : "");
+  if (voteMode) $("count").textContent = SCORE
+    ? `二次審査：一次審査で選ばれた ${view.length} 作品すべてに ${S_MIN}〜${S_MAX}pt をつけてください。5を平均にせず、なるべく${S_MIN}〜${S_MAX}にばらけるように（くらべて付ける形で）`
+      + (hideName() ? "。投稿者名は隠しています" : "")
+    : (RV ? `最優秀賞の再投票：同点だった${view.length}作品のうち、最優秀賞にふさわしいと思うほうを1つ選んでください`
+        : `投票の候補 ${view.length}件（審査員みんなが選んだ作品）。1位〜${VOTE_MAX}位を付けてください`);
+  if (commentMode) $("count").textContent =
+    "一言コメント：書いた内容はこのブラウザに保存されます。終わったら下の「コピー」でテキストを取って、運営に送ってください";
+  grid.querySelectorAll(".card").forEach(c => {
+    const id = c.dataset.id;
+    c.querySelector(".ph").onclick = () => { if (ENTRIES.find(x=>x.id===id).image_count) openModal(view.findIndex(x=>x.id===id)); };
+    c.querySelector(".pick").onclick = () => togglePick(id);
+    const kb = c.querySelector(".keep"); if (kb) kb.onclick = () => toggleKeep(id);
+    c.querySelector(".detail").onclick = () => openModal(view.findIndex(x=>x.id===id));
+    c.querySelectorAll(".awrow button").forEach(b => b.onclick = () => toggleAward(b.dataset.aw, id));
+    c.querySelectorAll(".scrow button").forEach(b => b.onclick = () => setScore(id, +b.dataset.pt));
+    c.querySelectorAll(".vd button").forEach(b => b.onclick = () => {
+      const v = verdicts[id] === b.dataset.v ? undefined : b.dataset.v;
+      // 外すときは理由を一言（あとで2人の判定をまとめるときに見る）。キャンセルなら外さない
+      if (v === "out") {
+        const r = prompt("外す理由を一言（例：ワールドが違う）。空でも外せます", vnotes[id] || "");
+        if (r === null) return;
+        vnotes[id] = r.trim();
+      } else delete vnotes[id];
+      // もう一人がデータ上で外した作品を戻すときは「扱う」として残す（消すだけだと開き直したときにデータの判定に戻るため）
+      if (v) verdicts[id] = v;
+      else if ((ENTRIES.find(x => x.id === id) || {}).entry_verdict === "out") verdicts[id] = "in";
+      else delete verdicts[id];
+      save("verdict", verdicts); save("vnote", vnotes); render();
+    });
+  });
+  renderBar();
+}
+function card(e){
+  const p = curSel()[e.id];
+  const aw0 = awardOf(e);
+  const pp = perOf(e), over = isOver(e);
+  const badges = [
+    e.image_count > 1 ? `<span class="badge">${C.multiImageIsOne ? "組写真 " : ""}${e.image_count}枚</span>` : "",
+    (isOut(e) && verdicts[e.id] !== "out") ? `<span class="badge warn">審査外（${e.isJudge ? "主催" : e.chatter ? "写真なし" : e.lateOut ? "締切後" : e.earlyOut ? "開始前" : "引用なし"}）</span>` : "",
+    e.needsCheck && !isOut(e) ? `<span class="badge warn">要確認</span>` : "",
+    over && isHost() ? `<span class="badge warn">${pp.total}点中${pp.n}点目</span>` : "",
+    aw0 ? `<span class="badge" style="background:#7b4fd8">${aw0.short}</span>` : "",
+    e.isNew && !voteMode ? `<span class="badge" style="background:#2f7d32">新着</span>` : ""   // 投票中は出さない（片方だけに付くと印象が偏るため）
+  ].join("");
+  // 判定のボタン：要確認・点数こえは「扱う／でない」の両方。ふつうの作品は、怪しいときに外すボタンだけ
+  const both = e.needsCheck || over || verdicts[e.id] === "in";
+  const vd = isHost() ? `<div class="vd">${both
+      ? `<button data-v="in" aria-pressed="${verdicts[e.id]==="in"}">応募として扱う</button>
+         <button data-v="out" aria-pressed="${verdicts[e.id]==="out"}">応募でない</button>`
+      : `<button data-v="out" aria-pressed="${verdicts[e.id]==="out"}">${verdicts[e.id]==="out" ? "外した（戻す）" : "怪しい・応募から外す"}</button>`}
+    </div>` : "";
+  const whys = e.reasons.concat(over && isHost() ? [`この人の応募が${pp.total}点（1人${MAX_PER}点まで）。どれを外すか決めてください`] : [])
+    .concat(isHost() && verdicts[e.id] === "out" ? ["外した理由：" + escapeHtml(vnotes[e.id] || "（なし）")] : []);
+  const why = whys.length ? `<div class="row" style="color:#b06a10">${whys.join("・")}</div>` : "";
+  // 主催の確認用：誰が選んだか・どの賞に選ばれたか（投票中は出さない）
+  const selRow = (isHost() && !voteMode && (e.selBy.length || e.awardBy.length)) ? `<div class="selrow">${
+      e.selBy.length ? `<span class="sv">選出 ${e.selBy.length}票</span><span class="sw">${e.selBy.join("・")}</span>` : ""}${
+      e.awardBy.map(a => `<span class="sa">${a.label.includes(a.judge) ? a.label : a.label + "・" + a.judge}</span>`).join("")}</div>` : "";
+  const awardBtns = e.image_count ? awardsFor(e).map(a =>
+      `<button data-aw="${a.key}" aria-pressed="${awards[a.key]===e.id}">${a.short}</button>`).join("") : "";
+  const awardRow = awardBtns ? `<div class="awrow"><span>担当の賞</span>${awardBtns}</div>` : "";
+  const kept = isKept(e.id);
+  const photo = e.image_count
+    ? `<div class="ph"><img loading="lazy" src="${img(e.images[0],"small")}" alt=""><div class="badges">${badges}</div><div class="pickmark">${p ? (SCORE && voteMode ? p.pt + "pt" : RV && voteMode ? "✓" : p.order) : ""}</div><div class="keepmark">★</div></div>`
+    : `<div class="ph noimg">画像なし<div class="badges">${badges}</div></div>`;
+  return `<article class="card ${p?"picked":""} ${kept?"kept":""} ${isOut(e)?"excluded":""}" data-id="${e.id}">${photo}
+    <div class="meta">
+      <div class="txt">${escapeHtml(e.text || "")}</div>
+      <div class="row"><span class="au">${hideName() ? (SCORE ? "（二次審査中は非表示）" : "（投票中は非表示）") : "@" + e.author}</span><span>${e.posted_at_jst}</span></div>
+      ${why}${selRow}
+      <div class="acts">
+        <button class="pick" ${(!voteMode && !canPick()) || (voteMode && SCORE) ? "hidden" : ""}>${voteMode ? (RV ? (p ? "選んだ（外す）" : "これを選ぶ") : (p ? p.order + "位（外す）" : "順位を付ける")) : (p ? "外す" : "選ぶ")}</button>
+        ${voteMode ? "" : `<button class="keep" aria-pressed="${kept}">${kept?"キープ中":"キープ"}</button>`}
+        <button class="detail">拡大</button>
+      </div>
+      ${voteMode ? (SCORE ? `<div class="scrow">${scoreBtns(e.id)}</div>` : "") : awardRow + vd}
+    </div></article>`;
+}
+/* ---- 二次審査の点数 ---- */
+function scoreBtns(id){
+  return S_RANGE.map(n => `<button data-pt="${n}" aria-pressed="${!!votes[id] && votes[id].pt === n}">${n}</button>`).join("");
+}
+function setScore(id, n){
+  if (votes[id] && votes[id].pt === n) delete votes[id]; else votes[id] = {pt: n};
+  save(selKey(), votes);
+  render();
+  if ($("modal").dataset.open === "1") fillModal();
+}
+function escapeHtml(s){ return s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---- 選ぶ ---- */
+function togglePick(id){
+  const sel = curSel(), max = curMax();
+  if (voteMode && SCORE) return;   // 二次審査は点数のボタンでつける
+  if (!voteMode && !canPick()) { alertBar(`${judge}さんは一次審査では選びません（キープと担当の賞は使えます）`); return; }
+  if (sel[id]) {
+    delete sel[id]; renumber();
+    // 選ぶのをやめた作品がイチオシだったら、イチオシも外す
+    if (!voteMode) myAwards().filter(a => a.needsPick && awards[a.key] === id).forEach(a => { delete awards[a.key]; save("awards:" + judge, awards); });
+  }
+  else {
+    if (Object.keys(sel).length >= max) {
+      alertBar(voteMode ? (RV ? "選べるのは1つです。外してから選び直してください。" : `順位は${max}位までです。外してから付け直してください。`)
+                        : `選べるのは${max}点までです。迷っているものは「キープ」に置いておけます。`);
+      return;
+    }
+    sel[id] = {order: Object.keys(sel).length + 1, memo: ""};
+  }
+  save(selKey(), sel);
+  render();
+  if ($("modal").dataset.open === "1") fillModal();
+}
+function renumber(){
+  const sel = curSel();
+  Object.entries(sel).sort((a,b) => a[1].order - b[1].order).forEach(([id],i) => sel[id].order = i + 1);
+}
+function alertBar(msg){ const s = $("pickState"); const old = s.textContent; s.textContent = msg; setTimeout(() => renderBar(), 2600); }
+
+function renderBar(){
+  if (commentMode) {
+    const t = myCommentTargets(), done = t.filter(x => x.e && (comments[x.key] || "").trim()).length;
+    $("pickState").textContent = `一言コメント ${done} / ${t.length}（${judge}）`;
+    $("slots").innerHTML = "";
+    return;
+  }
+  if (voteMode && SCORE) {
+    const pool = ENTRIES.filter(e => e.inPool), pts = pool.map(e => votes[e.id] && votes[e.id].pt).filter(Boolean);
+    const used = new Set(pts).size;
+    // 5を平均にせず、なるべく広くばらけるように：10作品以上つけたのに半分の点しか使っていなければ声をかける
+    const narrow = pts.length >= 10 && used < Math.ceil(S_RANGE.length / 2);
+    $("pickState").textContent = `点をつけた ${pts.length} / ${pool.length} 作品（${judge}）`
+      + (narrow ? `・使っている点が${used}種類だけです。なるべく${S_MIN}〜${S_MAX}にばらけるように` : "");
+    $("slots").innerHTML = `<div class="dist" title="それぞれの点をつけた作品の数">` + S_RANGE.map(n =>
+      `<span><b>${n}pt</b>${pts.filter(x => x === n).length}</span>`).join("") + `</div>`;
+    return;
+  }
+  const list = Object.entries(curSel()).sort((a,b) => a[1].order - b[1].order);
+  $("pickState").textContent = voteMode
+    ? (RV ? `${list.length ? "選びました" : "まだ選んでいません"}（${judge}）` : `${list.length} / ${VOTE_MAX} 位（${judge}）`)
+    : !canPick() ? `一次審査では選びません・キープ ${keeps.length}件（${judge}）`
+    : `${list.length} / ${MAX_PICK} 点`
+      + (MIN_PICK && list.length < MIN_PICK ? `（${MIN_PICK}点以上選んでください）` : "")
+      + myAwards().filter(a => a.needsPick).map(a => awards[a.key] ? `・${a.label}あり` : `・${a.label}まだ`).join("")
+      + `・キープ ${keeps.length}件（${judge}）`;
+  const slot = (id, label) => {
+    const e = id ? ENTRIES.find(x => x.id === id) : null;
+    return e
+      ? `<div class="slot" title="${hideName() ? "" : "@" + e.author}"><img src="${img(e.images[0],"small")}" alt=""><span class="n">${label}</span></div>`
+      : `<div class="slot"><span class="n" style="color:var(--muted);text-shadow:none">${label}</span></div>`;
+  };
+  $("slots").innerHTML = voteMode
+    ? Array.from({length: VOTE_MAX}, (_,i) => slot(list[i] ? list[i][0] : null, RV ? "選択" : (i+1) + "位")).join("")
+    : Array.from({length: curMax()}, (_,i) => slot(list[i] ? list[i][0] : null, String(i+1))).join("")
+      + myAwards().map(a => `<span class="sep"></span>` + slot(awards[a.key], a.short)).join("");
+}
+
+/* ---- 詳細 ---- */
+let curImg = 0;
+function openModal(i){ cur = i; curImg = 0; $("modal").dataset.open = "1"; fillModal(); }
+function closeModal(){ $("modal").dataset.open = "0"; }
+function fillModal(){
+  const e = view[cur]; if (!e) return;
+  const p = curSel()[e.id];
+  $("mImg").src = img(e.images[curImg] || e.images[0], "large");
+  $("mAuthor").textContent = hideName() ? (SCORE ? "（二次審査中は非表示）" : "（投票中は非表示）") : "@" + e.author;
+  $("mText").textContent = e.text || "（本文なし）";
+  $("mTime").textContent = e.posted_at_jst;
+  $("mCount").textContent = e.image_count + "枚"
+    + (e.image_count > 1 ? (C.multiImageIsOne ? "（組写真・連作として全部で1点。小さい写真を押すと切り替わります）" : "（1枚目が作品）") : "");
+  const pp = perOf(e);
+  $("mPer").textContent = hideName() ? "—" : (isOut(e) ? "審査外" : `${pp.total}点中 ${pp.n}点目`)
+    + (MAX_PER && pp.total > MAX_PER ? `（1人${MAX_PER}点まで）` : "");
+  $("mLink").href = e.url;
+  $("mLink").hidden = hideName();   // 元のポストを開くと名前が分かるので、投票中は出さない
+  $("mPick").textContent = voteMode ? (RV ? (p ? "選んだ（外す）" : "この作品を選ぶ") : (p ? `${p.order}位（外す）` : "この作品に順位を付ける"))
+                                    : (p ? `選択を外す（${p.order}番目）` : "この作品を選ぶ");
+  $("mPick").className = p ? "big" : "big off";
+  $("mPick").hidden = (!voteMode && !canPick()) || (voteMode && SCORE);
+  const kept = isKept(e.id);
+  $("mKeep").hidden = voteMode;
+  $("mKeep").textContent = kept ? "キープから外す（K）" : "キープに置く（K）";
+  $("mKeep").setAttribute("aria-pressed", kept);
+  $("mMemo").hidden = voteMode;
+  $("mMemo").value = p && !voteMode ? (p.memo || "") : "";
+  $("mMemo").disabled = !p || voteMode;
+  $("mMemo").placeholder = p ? "メモ（自分だけに見えます）" : "選ぶとメモを書けます";
+  const mA = voteMode ? [] : awardsFor(e);
+  $("mAwards").innerHTML = mA.length
+    ? `<span>担当の賞</span>` + mA.map(a => `<button data-aw="${a.key}" aria-pressed="${awards[a.key]===e.id}">${a.label}</button>`).join("")
+    : "";
+  if (voteMode && SCORE) $("mAwards").innerHTML = `<span>点数（キーの1〜9、0で10）</span><div class="scrow">${scoreBtns(e.id)}</div>`;
+  $("mAwards").querySelectorAll("button[data-aw]").forEach(b => b.onclick = () => toggleAward(b.dataset.aw, e.id));
+  $("mAwards").querySelectorAll("button[data-pt]").forEach(b => b.onclick = () => setScore(e.id, +b.dataset.pt));
+  $("mThumbs").innerHTML = (e.images || []).map((u,i) =>
+    `<img src="${img(u,"small")}" data-i="${i}" aria-current="${i===curImg}" alt="">`).join("");
+  $("mThumbs").querySelectorAll("img").forEach(t => t.onclick = () => { curImg = +t.dataset.i; fillModal(); });
+}
+$("mPrev").onclick = () => { if (cur > 0) { cur--; curImg = 0; fillModal(); } };
+$("mNext").onclick = () => { if (cur < view.length - 1) { cur++; curImg = 0; fillModal(); } };
+$("mClose").onclick = closeModal;
+$("mPick").onclick = () => togglePick(view[cur].id);
+$("mKeep").onclick = () => toggleKeep(view[cur].id);
+$("mMemo").oninput = () => { const e = view[cur]; if (!voteMode && picks[e.id]) { picks[e.id].memo = $("mMemo").value; save("picks:" + judge, picks); } };
+$("modal").onclick = ev => { if (ev.target.id === "modal") closeModal(); };
+document.addEventListener("keydown", ev => {
+  if ($("modal").dataset.open !== "1") return;
+  if (ev.key === "Escape") closeModal();
+  if (ev.target.tagName === "TEXTAREA") return;
+  if (ev.key === "ArrowLeft") $("mPrev").click();
+  if (ev.key === "ArrowRight") $("mNext").click();
+  if (voteMode && SCORE && /^[0-9]$/.test(ev.key)) {
+    const n = ev.key === "0" ? 10 : +ev.key;
+    if (n >= S_MIN && n <= S_MAX) setScore(view[cur].id, n);
+    return;
+  }
+  if (ev.key.toLowerCase() === "s") togglePick(view[cur].id);
+  if (ev.key.toLowerCase() === "k") toggleKeep(view[cur].id);
+});
+
+/* ---- 書き出し ---- */
+/* ---- 一言コメント ---- */
+// その審査員が書く欄：最優秀賞（全員）＋自分の担当の賞
+function myCommentTargets(){
+  const t = [];
+  const g = ENTRIES.find(e => e.prize_key === "grand");
+  t.push({key: "grand", label: "最優秀賞", e: g,
+          note: "感想をひとこと。短い言葉や単語だけでも大丈夫です"});
+  for (const a of myAwards()) t.push({key: a.key, label: a.label, e: ENTRIES.find(x => x.prize_key === a.key),
+          note: "選んだ理由を一言。短い言葉や単語だけでも大丈夫です"});
+  return t;
+}
+function renderComments(){
+  const box = $("commentArea");
+  box.innerHTML = myCommentTargets().map(x => x.e ? `
+    <div class="cmt">
+      <img src="${img(x.e.images[0], "medium")}" alt="">
+      <div>
+        <div class="clabel">${x.label}</div>
+        <div class="cau">@${x.e.author}　<a href="${x.e.url}" target="_blank" rel="noopener">元のポストを開く ↗</a></div>
+        <div class="hint">${x.note}</div>
+        <textarea data-k="${x.key}" placeholder="ここに一言">${escapeHtml(comments[x.key] || "")}</textarea>
+      </div>
+    </div>` : `
+    <div class="cmt empty">
+      <div class="clabel">${x.label}</div>
+      <div class="hint">まだ決まっていません。決まったらここに表示されます（賞が重なって選び直しになった場合など）</div>
+    </div>`).join("");
+  box.querySelectorAll("textarea").forEach(ta => ta.oninput = () => {
+    comments[ta.dataset.k] = ta.value; save("comment:" + judge, comments); renderBar();
+  });
+  renderBar();
+}
+function commentText(){
+  return `【${judge}の一言コメント】\n` + myCommentTargets().map(x =>
+    `■ ${x.label}` + (x.e ? `　@${x.e.author}　${x.e.url}` : "（未定）") + "\n"
+    + ((comments[x.key] || "").trim() || "（まだ書いていません）")).join("\n\n");
+}
+
+// 投票の書き出しに使うコード（審査員ごとに違う6文字）。URLをDiscordに貼ると、プレビューで投稿者名が出て、
+// 誰がどれを選んだかもほかの審査員に見えてしまうため。集計は tally_revote.js で同じ計算をして元に戻す
+function voteCode(id){
+  let h = 0x811c9dc5;
+  const s = judge + ":" + id;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+  return h.toString(36).toUpperCase().padStart(7, "0").slice(-6);
+}
+
+function exportText(){
+  if (commentMode) return commentText();
+  if (voteMode && SCORE) {
+    // 点数は非公表。URLは投稿者名の入らない /i/status/<id> の形にする（Discordのプレビューで名前が出ないように）
+    const pool = ENTRIES.filter(e => e.inPool);
+    const done = pool.filter(e => votes[e.id]).sort((a,b) => votes[b.id].pt - votes[a.id].pt);
+    const yet = pool.filter(e => !votes[e.id]);
+    return `【${judge}の二次審査】\n（点数は外に出さないでください。運営にだけ送ってください）\n`
+      + `■ 点数 ${done.length} / ${pool.length} 作品\n`
+      + (done.length ? done.map(e => `${votes[e.id].pt}pt　${anonUrl(e)}`).join("\n") : "まだ点をつけていません")
+      + (yet.length ? `\n\n■ まだ点をつけていない ${yet.length} 作品\n` + yet.map(e => anonUrl(e)).join("\n") : "");
+  }
+  if (voteMode && RV) {
+    const v = Object.keys(votes);
+    return `【${judge}の再投票（最優秀賞）】\n` + (v.length
+      ? "投票コード：" + voteCode(v[0]) + "\n（集計用のコードです。どちらを選んだかは、ほかの人には分かりません）"
+      : "まだ選んでいません");
+  }
+  if (voteMode) {
+    const v = Object.entries(votes).sort((a,b) => a[1].order - b[1].order);
+    return `【${judge}の投票】\n` + (v.length
+      ? v.map(([id,p]) => { const e = ENTRIES.find(x => x.id === id);
+          return `${p.order}位（${VOTE_MAX + 1 - p.order}点）　${hideName() ? anonUrl(e) : "@" + e.author + "　" + e.url}`; }).join("\n")
+      : "まだ順位を付けていません");
+  }
+  const list = Object.entries(picks).sort((a,b) => a[1].order - b[1].order);
+  const head = `【${judge}の選出】`;
+  const range = MIN_PICK ? `${MIN_PICK}〜${MAX_PICK}点` : `${MAX_PICK}点まで`;
+  const ichi = myAwards().filter(a => a.needsPick).map(a => awards[a.key]);
+  const sec1 = !canPick() ? ""
+    : list.length
+    ? `■ 選んだ作品（${range}）${list.length}点` + (MIN_PICK && list.length < MIN_PICK ? `　※あと${MIN_PICK - list.length}点` : "") + "\n"
+      + list.map(([id,p],i) => {
+        const e = ENTRIES.find(x => x.id === id);
+        return `${i+1}. @${e.author}　${e.url}${ichi.includes(id) ? "　★イチオシ" : ""}${p.memo ? "\n   メモ：" + p.memo : ""}`;
+      }).join("\n")
+    : `■ 選んだ作品（${range}）まだ選んでいません`;
+  const mine = myAwards();
+  const sec2 = mine.length
+    ? (sec1 ? "\n\n" : "") + mine.map(a => {
+        const e = awards[a.key] ? ENTRIES.find(x => x.id === awards[a.key]) : null;
+        return `■ ${a.label}\n` + (e ? `@${e.author}　${e.url}` : "まだ選んでいません");
+      }).join("\n")
+    : "";
+  // キープは自分の作業用。版が変わっても戻せるように末尾に付ける（主催に送るときは消してもよい）
+  const sec3 = keeps.length
+    ? `\n\n■ キープ ${keeps.length}件（自分用の控え。送らなくても大丈夫です）\n`
+      + keeps.map(id => { const e = ENTRIES.find(x => x.id === id); return e ? `・@${e.author}　${e.url}` : ""; })
+             .filter(Boolean).join("\n")
+    : "";
+  return head + "\n" + sec1 + sec2 + sec3;
+}
+// 書き出し欄に出しているもの。"verdict" のときは判定（コピーと送るで同じものを使う）
+let shown = "";
+const currentText = () => shown === "verdict" ? verdictText() : exportText();
+$("btnExport").onclick = () => {
+  const box = $("exportBox");
+  box.dataset.open = box.dataset.open === "1" && shown === "" ? "0" : "1";
+  shown = "";
+  $("exportText").value = exportText();
+};
+$("btnVerdict").onclick = () => {
+  shown = "verdict";
+  $("exportBox").dataset.open = "1";
+  $("exportText").value = verdictText();
+};
+function verdictText(){
+  const out = Object.entries(verdicts).filter(([,v]) => v === "out").map(([id]) => ENTRIES.find(x=>x.id===id));
+  const inn = Object.entries(verdicts).filter(([,v]) => v === "in").map(([id]) => ENTRIES.find(x=>x.id===id));
+  const pending = ENTRIES.filter(e => e.needsCheck && !e.chatter && !verdicts[e.id]);
+  const f = list => list.length ? list.map(e => `・@${e.author}　${e.url}` + (vnotes[e.id] ? `　理由：${vnotes[e.id]}` : "")).join("\n") : "（なし）";
+  // 1人の点数をこえている人（運営がどれを外すか決める）
+  const overs = Object.values(perAuthor).filter(l => MAX_PER && l.length > MAX_PER)
+    .map(l => l.map(id => ENTRIES.find(x => x.id === id)));
+  const g = list => list.map((e,i) => `  ${i+1}. ${e.posted_at_jst}　${e.url}`).join("\n");
+  return [
+    `【${judge}の判定】`, "",
+    `【応募でない（除外）${out.length}件】`, f(out), "",
+    `【応募として扱う ${inn.length}件】`, f(inn), "",
+    `【まだ判定していない要確認 ${pending.length}件】`, f(pending), "",
+    `【${MAX_PER}点をこえている人 ${overs.length}人】`,
+    overs.length ? overs.map(l => `・@${l[0].author}（${l.length}点）\n` + g(l)).join("\n") : "（なし）", "",
+    "--- 貼り付け用（apply_verdicts.js で読む）---", JSON.stringify({by: judge, verdict: verdicts, note: vnotes})
+  ].join("\n");
+}
+// 書き出したテキストを「■ 見出し」ごとに切り分ける
+function parseSections(text){
+  const secs = []; let cur = null;
+  for (const line of text.split("\n")) {
+    const h = line.match(/^\s*■\s*(.+?)\s*$/);
+    if (h) { cur = {title: h[1], rows: []}; secs.push(cur); continue; }
+    if (cur) cur.rows.push(line);
+  }
+  return secs;
+}
+// その区画に並んでいる作品（ポストのURL）と、次の行のメモを拾う
+function rowsToItems(rows){
+  const out = [];
+  rows.forEach((line, i) => {
+    const m = line.match(/status\/(\d+)/); if (!m) return;
+    if (!ENTRIES.some(e => e.id === m[1])) { out.push({id: m[1], unknown: true, memo: ""}); return; }
+    const nx = (rows[i+1] || "").match(/メモ：(.*)$/);
+    out.push({id: m[1], memo: nx ? nx[1].trim() : ""});
+  });
+  return out;
+}
+$("btnRestore").onclick = () => {
+  const box = $("exportBox");
+  if (box.dataset.open !== "1") { box.dataset.open = "1"; $("exportText").value = ""; $("exportText").focus(); alertBar("前の版の書き出しを貼り付けてから、もう一度押してください"); return; }
+  const text = $("exportText").value;
+  // 二次審査の点数を戻す（「7pt　https://x.com/i/status/…」の行）
+  if (voteMode && SCORE) {
+    let n = 0;
+    text.split("\n").forEach(line => {
+      const m = line.match(/^\s*(\d+)pt.*status\/(\d+)/); if (!m) return;
+      const e = ENTRIES.find(x => x.id === m[2] && x.inPool), pt = +m[1];
+      if (e && pt >= S_MIN && pt <= S_MAX) { votes[e.id] = {pt}; n++; }
+    });
+    if (!n) { alertBar("点数の行が見つかりませんでした"); return; }
+    save(selKey(), votes); render();
+    alertBar(`点数${n}作品ぶんを復元しました`);
+    return;
+  }
+  const secs = parseSections(text);
+  const pickSec = secs.find(s => s.title.startsWith("選んだ作品") || s.title.startsWith("総合部門"));
+  const keepSec = secs.find(s => s.title.startsWith("キープ"));
+  // 見出しが無い（URLだけ貼られた）ときは、全部を選んだ作品として読む
+  const pickItems = secs.length ? (pickSec ? rowsToItems(pickSec.rows) : []) : rowsToItems(text.split("\n"));
+  const done = [];
+
+  const okPicks = pickItems.filter(x => !x.unknown).slice(0, MAX_PICK);
+  if (okPicks.length) {
+    picks = {};
+    okPicks.forEach((x, i) => picks[x.id] = {order: i + 1, memo: x.memo});
+    save("picks:" + judge, picks);
+    done.push(`選んだ作品${okPicks.length}点`);
+  }
+  if (keepSec) {
+    keeps = rowsToItems(keepSec.rows).filter(x => !x.unknown).map(x => x.id);
+    save("keeps:" + judge, keeps);
+    done.push(`キープ${keeps.length}件`);
+  }
+  let awN = 0;
+  for (const a of myAwards()) {
+    const s = secs.find(x => x.title === a.label); if (!s) continue;
+    const it = rowsToItems(s.rows).filter(x => !x.unknown)[0]; if (!it) continue;
+    awards[a.key] = it.id; awN++;
+  }
+  if (awN) { save("awards:" + judge, awards); done.push(`担当の賞${awN}点`); }
+
+  if (!done.length) { alertBar("この版に含まれる作品が見つかりませんでした"); return; }
+  const skipped = pickItems.filter(x => x.unknown).length;
+  render();
+  alertBar(`${done.join("・")}を復元しました${skipped ? "（この版にない作品は飛ばしました）" : ""}`);
+};
+$("btnCopy").onclick = async () => {
+  const t = currentText();
+  $("exportBox").dataset.open = "1"; $("exportText").value = t;
+  try { await navigator.clipboard.writeText(t); alertBar("コピーしました"); }
+  catch(_) { $("exportText").select(); alertBar("選択しました（Ctrl+Cでコピー）"); }
+};
+// 運営に送る：運営（ぷっちー）のスプレッドシートに書き出しが届く。Discordに貼らなくてよい（C.sendUrl）
+// 送り直したときは、運営は新しいほうを使う。送れなかったときは今までどおり「コピー」して送ってもらう
+const SEND_URL = C.sendUrl || "";
+if (SEND_URL) { $("btnSend").hidden = false; $("btnCopy").classList.remove("primary"); }
+$("btnSend").onclick = async () => {
+  const t = currentText();
+  $("exportBox").dataset.open = "1"; $("exportText").value = t;
+  const head = t.split("\n")[0];
+  const before = load("sent:" + head);
+  if (!confirm(`${head}を運営に送ります。`
+      + (before ? `\n（${before} にも送っています。新しく送ったほうが使われます）` : "\n送り直したときは、新しく送ったほうが使われます。"))) return;
+  const body = JSON.stringify({contest: C.storeKey, judge, text: t,
+                               sentAt: new Date().toISOString(), build: (window.BUILD || {}).date || ""});
+  const btn = $("btnSend");
+  btn.disabled = true; btn.textContent = "送っています…";
+  try {
+    let r;
+    try { r = await fetch(SEND_URL, {method: "POST", body}); }
+    catch(_) {
+      // 返事が読めないだけで届くこともある（ブラウザの制限）。もう一度、返事を読まない形で送る
+      try { await fetch(SEND_URL, {method: "POST", mode: "no-cors", body}); }
+      catch(_) { alertBar("送れませんでした。「コピー」して運営に送ってください"); return; }
+      alertBar("送りました（届いたかの返事は読めませんでした。心配なら「コピー」して運営に送ってください）");
+      return;
+    }
+    let d = null;
+    try { d = await r.json(); } catch(_) {}
+    if (!d || !d.ok) { alertBar("送れませんでした" + (d && d.error ? "（" + d.error + "）" : "") + "。「コピー」して運営に送ってください"); return; }
+    save("sent:" + head, d.at);
+    alertBar(`送りました（${d.at}）`);
+  } finally {
+    btn.disabled = false; btn.textContent = "運営に送る";
+  }
+};
+
+const newest = ENTRIES.map(e => e.posted_at_jst).sort().pop() || "—";
+$("stamp").textContent = window.BUILD
+  ? `この版のデータ：${window.BUILD.date} 時点`
+  : `いちばん新しい応募：${newest}`;
+
+// 新着：いちばん新しい回収日に初めて拾われたもの（回収が2回以上あるときだけ使う）
+const ROUNDS = [...new Set(ENTRIES.map(e => e.found_round).filter(Boolean))].sort();
+const LATEST_ROUND = ROUNDS.length > 1 ? ROUNDS[ROUNDS.length - 1] : null;
+ENTRIES.forEach(e => e.isNew = !!LATEST_ROUND && e.found_round === LATEST_ROUND);
+if (LATEST_ROUND) {
+  $("wrapNew").hidden = false;
+  $("wrapNew").title = `${LATEST_ROUND} の回収で新しく入ったもの`;
+}
+
+$("rules").textContent = C.rulesNote || "";
+const storageOK = (() => { try { localStorage.setItem(SK + "t","1"); localStorage.removeItem(SK + "t"); return true; } catch(_) { return false; } })();
+if (!storageOK) $("warnStore").hidden = false;
+
+// スマホ：絞り込みはボタンでたたむ（ヘッダーが画面を埋めてしまうため）
+$("fToggle").onclick = () => {
+  const f = $("filters");
+  const open = f.dataset.open === "1";
+  f.dataset.open = open ? "0" : "1";
+  $("fToggle").setAttribute("aria-expanded", String(!open));
+  $("fToggle").textContent = open ? "絞り込み ＋" : "絞り込み －";
+};
+// 下のバーの高さぶんだけ一覧の下に余白を空ける。バーの高さが変わっても作品が隠れない
+try {
+  const barEl = document.querySelector(".bar"), mainEl = document.querySelector("main");
+  new ResizeObserver(() => { mainEl.style.paddingBottom = (barEl.offsetHeight + 20) + "px"; }).observe(barEl);
+} catch(_) {}
+
+// 投票モード：候補（vote_pool）がデータに入っているときだけボタンが出る
+$("voteToggle").hidden = !HAS_POOL;
+const VOTE_LABEL = SCORE ? "二次審査（点をつける）" : RV ? "最優秀賞の再投票" : "投票する";
+$("voteToggle").textContent = VOTE_LABEL;
+// 画面の切り替え：選考（ふだん）／投票／一言コメント。同時には入らない
+function setMode(m){
+  voteMode = m === "vote";
+  commentMode = m === "comment";
+  const special = voteMode || commentMode;
+  $("voteToggle").dataset.on = voteMode ? "1" : "0";
+  $("voteToggle").textContent = voteMode ? "選考の一覧に戻る" : VOTE_LABEL;
+  $("cmtToggle").dataset.on = commentMode ? "1" : "0";
+  $("cmtToggle").textContent = commentMode ? "選考の一覧に戻る" : "一言コメントを書く";
+  $("btnExport").textContent = commentMode ? "一言コメントを書き出す" : voteMode ? (SCORE ? "点数を書き出す" : "投票を書き出す") : "選んだ作品を書き出す";
+  $("btnRestore").hidden = special && !(voteMode && SCORE);
+  $("filters").style.display = special ? "none" : "";
+  $("fToggle").style.display = special ? "none" : "";
+  $("grid").hidden = commentMode;
+  $("commentArea").hidden = !commentMode;
+  $("exportBox").dataset.open = "0";
+  shown = "";
+  window.scrollTo(0, 0);
+  render();
+  if (commentMode) renderComments();
+}
+$("voteToggle").onclick = () => setMode(voteMode ? "select" : "vote");
+// 一言コメント：賞が決まった（prize_key が入った）ときだけボタンが出る
+$("cmtToggle").hidden = !HAS_PRIZE;
+$("cmtToggle").onclick = () => setMode(commentMode ? "select" : "comment");
+
+// ライト／ダークの切り替え
+const isDark = () => (document.documentElement.dataset.theme
+  || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";
+const themeLabel = () => { $("themeBtn").textContent = isDark() ? "☀ ライトにする" : "☾ ダークにする"; };
+$("themeBtn").onclick = () => { const t = isDark() ? "light" : "dark"; applyTheme(t); save("theme", t); themeLabel(); };
+themeLabel();
+
+/* ---- 別の端末で続ける（PC→スマホなど）----
+   この端末の選んだ内容を受け取り口（C.sendUrl）にしまって8文字のコードをもらい、ほかの端末でそのコードを入れて取り出す。
+   コードの入ったリンク（C.siteUrl?take=コード）をQRにして、スマホのカメラで読めば開くようにする */
+const HO_PREFIX = ["picks:", "awards:", "keeps:", VOTE_KEY, "comment:"];
+const hoKeys = j => HO_PREFIX.map(k => k + j).concat(isHost() ? ["verdict", "vnote"] : []);
+const siteUrl = () => C.siteUrl || (/^https?:$/.test(location.protocol) ? location.origin + location.pathname : "");
+const hoMsg = m => { $("hoMsg").textContent = m || ""; };
+$("hoBtn").hidden = !SEND_URL;
+$("hoBtn").onclick = () => {
+  $("hoJudge").textContent = judge; $("hoOut").hidden = true; hoMsg("");
+  $("hoBox").dataset.open = "1";
+};
+$("hoClose").onclick = () => { $("hoBox").dataset.open = "0"; };
+$("hoBox").onclick = ev => { if (ev.target === $("hoBox")) $("hoBox").dataset.open = "0"; };
+function showQR(link){
+  const box = $("hoQR");
+  const draw = () => { try { new QRCode(box, {text: link, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M}); } catch(_) {} };
+  if (window.QRCode) return draw();
+  const s = document.createElement("script");   // QRを描く部品は、使うときだけ読む（読めなければコードだけ出す）
+  s.src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";
+  s.onload = draw;
+  document.head.append(s);
+}
+$("hoMake").onclick = async () => {
+  const state = {};
+  for (const k of hoKeys(judge)) { const v = load(k); if (v != null) state[k] = v; }
+  const btn = $("hoMake"); btn.disabled = true; btn.textContent = "作っています…"; hoMsg("");
+  try {
+    const r = await fetch(SEND_URL, {method: "POST", body: JSON.stringify({contest: C.storeKey, judge, handoff: true, state})});
+    const d = await r.json();
+    if (!d.ok) throw new Error(d.error || "");
+    const link = siteUrl() ? siteUrl() + "?take=" + d.code + (isHost() ? "#host" : "") : "";
+    $("hoCode").textContent = d.code;
+    $("hoQR").innerHTML = "";
+    if (link) showQR(link);
+    $("hoHow").textContent = link
+      ? "スマホのカメラでこの四角を読み取ると、続きが開きます。読み取れないときは、スマホで審査室を開いて「別の端末で続ける」の下の欄にこのコードを入れてください。"
+      : "ほかの端末で審査室を開いて「別の端末で続ける」の下の欄に、このコードを入れてください。";
+    $("hoOut").hidden = false;
+  } catch(err) {
+    hoMsg("コードを作れませんでした" + (err.message ? "（" + err.message + "）" : "") + "。通信を確かめて、もう一度押してください");
+  } finally { btn.disabled = false; btn.textContent = "引き継ぎコードを作る"; }
+};
+async function takeCode(raw){
+  const code = String(raw || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (code.length !== 8) { hoMsg("コードは8文字です"); return; }
+  hoMsg("読み込んでいます…");
+  let d = null;
+  try { d = await (await fetch(SEND_URL + "?take=" + code)).json(); } catch(_) {}
+  if (!d || !d.ok) { hoMsg("読み込めませんでした" + (d && d.error ? "（" + d.error + "）" : "") + "。コードを確かめてください"); return; }
+  if (!JUDGES.includes(d.judge)) { hoMsg("審査員の名前が合いません"); return; }
+  if (!confirm(`${d.judge}さんの続きを読み込みます。\nこの端末にある${d.judge}さんの選んだ内容は、読み込んだものに置きかわります。`)) { hoMsg(""); return; }
+  // 知っている名前だけを書き込む（ほかの審査員のぶんは触らない）
+  const ok = HO_PREFIX.map(k => k + d.judge).concat(["verdict", "vnote"]);
+  for (const k of HO_PREFIX) { try { localStorage.removeItem(SK + k + d.judge); } catch(_) {} }
+  for (const [k, v] of Object.entries(d.state || {})) if (ok.includes(k)) save(k, v);
+  save("judge", d.judge);
+  location.replace(location.pathname + location.hash);   // ?take= を消して読み直す
+}
+$("hoTake").onclick = () => takeCode($("hoIn").value);
+$("hoIn").onkeydown = ev => { if (ev.key === "Enter") takeCode($("hoIn").value); };
+// QRから開いたとき（?take=コード）
+const takeParam = new URLSearchParams(location.search).get("take");
+if (takeParam && SEND_URL) { $("hoBtn").click(); $("hoIn").value = takeParam; takeCode(takeParam); }
+
+hostUI();
+render();
+} // start()
+</script>
+</body>
+</html>
