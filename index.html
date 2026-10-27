@@ -353,9 +353,10 @@ const CONTEST = {
   // 審査員【本人確認済 10/27】
   //   あきなき @AkiNaki_VRChat／相川お手上げ @aikawaoteage／ぷっちー @VRChat_Pucchii。ちゃこさんは主催特別賞を選ぶ
   judges: ["あきなき", "相川お手上げ", "ぷっちー", "ちゃこ"],   // 最初に出る名前が一次審査で選ぶ人になるように、ちゃこさんは最後
-  // 判定（応募として扱う／応募でない）のボタンが出る人。URLの末尾に #host【本人確認済 10/27：ちゃこさんとぷっちーだけ】
-  //   ワールドは指定のもので撮った前提で全部登録し、怪しいものだけこの2人が外す
-  hosts: ["ぷっちー", "ちゃこ"],
+  // 主催の画面（URLの末尾に #host）。開くと最初の人に決まり、審査員は選べない。ふだんの画面の名前の一覧にはこの人を出さない
+  //   ワールドは指定のもので撮った前提で全部登録し、怪しいものだけちゃこさんが自分の判断で外す【本人確認済 10/27】
+  //   ぷっちーは不具合の確認のときだけ #host で開く（ちゃこさんとして見える）【本人確認済 10/27】
+  hosts: ["ちゃこ"],
   // 一次審査（審査要領.md）：ちゃこさん以外が5〜10点を選び、その中からイチオシを1点【本人確認済 10/27 要領より】
   minPick: 5,
   maxPick: 10,
@@ -447,7 +448,13 @@ const ENTRIES = (window.ENTRIES || []).map(e => {
 });
 const img = (u, size) => u ? u + "?format=jpg&name=" + size : "";
 
-let judge = load("judge") || JUDGES[0];
+// 主催の画面（URLの最後が #host）は主催（C.hosts の最初の人）に決まっていて、審査員は選べない。
+// ふだんの画面の名前の一覧には主催を出さない（ほかの審査員がまちがえて選ばないように）【本人確認済 10/27】
+const HOST_MODE = location.hash === "#host";
+const HOST_JUDGE = (C.hosts || [])[0];
+const JUDGE_LIST = HOST_MODE ? [HOST_JUDGE] : JUDGES.filter(j => j !== HOST_JUDGE);
+let judge = HOST_MODE ? HOST_JUDGE : (JUDGE_LIST.includes(load("judge")) ? load("judge") : JUDGE_LIST[0]);
+addEventListener("hashchange", () => location.reload());   // #host をつけ外ししたら画面を作り直す
 let picks = load("picks:" + judge) || {};      // {id: {order, memo}}
 let awards = load("awards:" + judge) || {};    // {賞のkey: 作品のid}
 // 投票：選考が終わったあと、みんなの選出（vote_pool）から1〜5位を付ける。
@@ -508,7 +515,7 @@ function countPer(){
 const perOf = e => { const l = perAuthor[(e.author || "").toLowerCase()] || []; return {n: l.indexOf(e.id) + 1, total: l.length}; };
 const isOver = e => MAX_PER > 0 && perOf(e).total > MAX_PER;
 // 判定は運営だけ。URLの末尾に #host が付いているときだけ出す
-const isHost = () => (C.hosts || [C.host]).includes(judge) && location.hash === "#host";
+const isHost = () => HOST_MODE;
 let view = [];                                  // 表示中の並び
 let cur = -1;                                   // 詳細で開いている位置
 
@@ -517,10 +524,11 @@ function save(k,v){ try { localStorage.setItem(SK + k, JSON.stringify(v)); } cat
 
 /* ---- 審査員 ---- */
 const judgeSel = document.getElementById("judge");
-JUDGES.forEach(j => judgeSel.append(new Option(j, j)));
+JUDGE_LIST.forEach(j => judgeSel.append(new Option(j, j)));
 judgeSel.value = judge;
+judgeSel.disabled = HOST_MODE;
 judgeSel.onchange = () => {
-  judge = judgeSel.value; save("judge", judge);
+  judge = judgeSel.value; if (!HOST_MODE) save("judge", judge);
   picks = load("picks:" + judge) || {};
   awards = load("awards:" + judge) || {};
   keeps = load("keeps:" + judge) || [];
@@ -1193,8 +1201,9 @@ async function takeCode(raw){
   const ok = HO_PREFIX.map(k => k + d.judge).concat(["verdict", "vnote"]);
   for (const k of HO_PREFIX) { try { localStorage.removeItem(SK + k + d.judge); } catch(_) {} }
   for (const [k, v] of Object.entries(d.state || {})) if (ok.includes(k)) save(k, v);
-  save("judge", d.judge);
-  location.replace(location.pathname + location.hash);   // ?take= を消して読み直す
+  // ?take= を消して読み直す。主催のぶんは主催の画面（#host）で、ほかの人のぶんはふだんの画面で開く
+  if (d.judge !== HOST_JUDGE) save("judge", d.judge);
+  location.replace(location.pathname + (d.judge === HOST_JUDGE ? "#host" : ""));
 }
 $("hoTake").onclick = () => takeCode($("hoIn").value);
 $("hoIn").onkeydown = ev => { if (ev.key === "Enter") takeCode($("hoIn").value); };
