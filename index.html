@@ -23,6 +23,8 @@
   --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme:dark;
 }
 *{box-sizing:border-box}
+/* hidden をつけた部品は必ず隠す（.chk の display:inline-flex などが hidden に勝ってしまうため） */
+[hidden]{display:none !important}
 html,body{margin:0;padding:0}
 body{background:var(--bg);color:var(--ink);font-family:'Zen Kaku Gothic New',system-ui,sans-serif;font-weight:500;-webkit-font-smoothing:antialiased}
 button,select,input,textarea{font:inherit;color:inherit}
