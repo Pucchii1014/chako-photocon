@@ -651,11 +651,53 @@
    "#うなぎphoto",
    "#VRCちゃこフォトコン"
   ],
-  "quotes_announcement": false,
+  "quotes_announcement": true,
   "liked": false,
   "found_round": "2026-11-17",
   "found_via": [
+   "quotes",
    "search"
+  ]
+ },
+ {
+  "id": "2122781829724070215",
+  "url": "https://x.com/samovanilla2/status/2122781829724070215",
+  "author": "samovanilla2",
+  "posted_at_jst": "2026-11-18 05:00",
+  "text": "「光のファンデーション」 #VRCちゃこフォトコン #ルゼブル3D ",
+  "images": [
+   "https://pbs.twimg.com/media/HXVcFmpaQAE8skA"
+  ],
+  "image_count": 1,
+  "hashtags": [
+   "#VRCちゃこフォトコン",
+   "#ルゼブル3D"
+  ],
+  "quotes_announcement": true,
+  "liked": false,
+  "found_round": "2026-11-19",
+  "found_via": [
+   "quotes",
+   "search"
+  ]
+ },
+ {
+  "id": "2123046717197353351",
+  "url": "https://x.com/unagi99vrc/status/2123046717197353351",
+  "author": "unagi99vrc",
+  "posted_at_jst": "2026-11-18 22:32",
+  "text": "#VRCちゃこフォトコン ＠ Light Aquarium 開催決定！ 10/27は私の誕生日…なのですが、その日からひと月ほどの繁忙期が始まりとてもとても憂鬱なので、私が愛してやまないワールド「Light Aquarium」(phi16様作)の素敵な写真をたくさん見せてくださいお願いします！ 詳細はツリーへ #VRChat",
+  "images": [],
+  "image_count": 0,
+  "hashtags": [
+   "#VRCちゃこフォトコン",
+   "#VRChat"
+  ],
+  "quotes_announcement": true,
+  "liked": false,
+  "found_round": "2026-11-19",
+  "found_via": [
+   "quotes"
   ]
  }
 ]
