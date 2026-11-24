@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>審査室の使い方｜#VRCちゃこフォトコン</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yusei+Magic&family=Zen+Kaku+Gothic+New:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f5f0; --card:#fff; --ink:#1e1b18; --muted:#6b645c; --line:#e3ddd2; --rec:#e0483e;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14120f; --card:#1f1c18; --ink:#ece7df; --muted:#a79e92; --line:#302b24; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#14120f; --card:#1f1c18; --ink:#ece7df; --muted:#a79e92; --line:#302b24; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:'Zen Kaku Gothic New',system-ui,sans-serif;font-weight:500;line-height:1.85;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+main{max-width:720px;margin:0 auto;padding:28px 16px 64px}
+h1{font-family:'Yusei Magic',sans-serif;font-weight:400;font-size:28px;line-height:1.35;margin:0 0 4px}
+.sub{color:var(--muted);font-size:14px;margin:0 0 20px}
+.go{display:inline-block;background:var(--rec);color:#fff;text-decoration:none;font-weight:900;border-radius:999px;padding:9px 22px;margin:4px 0 8px}
+h2{font-size:19px;font-weight:900;margin:40px 0 10px;padding-top:18px;border-top:1px solid var(--line)}
+ol,ul{padding-left:1.4em;margin:8px 0}
+li{margin:3px 0}
+p{margin:8px 0}
+b{font-weight:900}
+.note{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:12px 0;font-size:15px}
+.warn{color:var(--rec);font-weight:700}
+kbd{font-family:inherit;font-size:13px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--card)}
+nav{font-size:14px;color:var(--muted);margin:16px 0 0}
+nav a{margin-right:12px;white-space:nowrap}
+footer{margin-top:48px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>審査室の使い方</h1>
+<p class="sub">#VRCちゃこフォトコン・審査員さん向け</p>
+
+<a class="go" href="./">審査室をひらく</a>
+<p>ログインはいりません。開いたら、上の「審査員」で自分の名前を選んでください。<br>選んだ内容は、そのブラウザに自動で保存されます。</p>
+
+<nav>
+<a href="#days">日程</a><a href="#round1">一次審査</a><a href="#filter">絞り込み</a><a href="#rule">応募になる作品</a><a href="#view">作品の見方</a><a href="#round2">二次審査</a><a href="#device">PCとスマホ</a><a href="#care">気をつけること</a>
+</nav>
+
+<h2 id="days">日程</h2>
+<ul>
+<li>一次審査：11/25〜11/30（5〜10点を選ぶ）</li>
+<li>二次審査：12/1〜12/6（点をつける）</li>
+<li>発表：12/10ごろ</li>
+</ul>
+
+<h2 id="round1">一次審査でやること</h2>
+<ol>
+<li>作品を見て、いいなと思ったものの「選ぶ」を押す（<b>5〜10点</b>）</li>
+<li>選んだ中から<b>イチオシを1点</b>選ぶ</li>
+<li>終わったら下の「選んだ作品を書き出す」→「コピー」</li>
+<li>Discordの<b>一般チャンネル</b>に、そのまま貼る</li>
+<li>「運営に送る」も押しておいてください（集計に使います）</li>
+</ol>
+<ul>
+<li>同じ人の作品を何点選んでもOKです</li>
+<li>迷った作品は「キープ」に置いておけます（自分用の仮置き。ほかの人には見えません）</li>
+<li>選ぶと、作品ごとにメモを書けます（自分用）</li>
+</ul>
+
+<h2 id="filter">絞り込み</h2>
+<p>上のチェックで、出す作品を切り替えられます（スマホは「絞り込み ＋」の中）。</p>
+<ul>
+<li><b>選んだものだけ</b>：自分が選んだ作品だけ</li>
+<li><b>キープだけ</b>：キープに置いた作品だけ</li>
+</ul>
+<p>並び順（新しい順・古い順・投稿者順）の切り替えと、本文・投稿者名での検索もできます。</p>
+
+<h2 id="rule">応募になる作品（引用・タグのこと）</h2>
+<p>応募は「<b>告知ポストの引用 ＋ #VRCちゃこフォトコン のタグ ＋ 写真</b>」です。</p>
+<ul>
+<li><b>引用がない投稿</b>：自動で審査外になっているので、一覧に出てきません</li>
+<li><b>引用はあるけどタグがない投稿</b>：一覧に出ます。「コンテストのタグなし」と出ますが、審査してOKです</li>
+<li><b>1ポストに写真が何枚か</b>：組写真・連作として<b>全部で1点</b>です。小さい写真を押すと切り替わります</li>
+<li>1人5点までです</li>
+<li>撮影は<b>指定ワールド（Light Aquarium）の中</b>だけです。投稿だけではわからないので、見て判断してください</li>
+</ul>
+<p class="note">「これ応募として大丈夫？」という作品があったら、ちゃこさんに伝えてください。外すかどうかは、ちゃこさんが決めます。</p>
+
+<h2 id="view">作品の見方</h2>
+<ul>
+<li>写真を押すと大きく見られます</li>
+<li>大きく見ている画面では、<kbd>←</kbd> <kbd>→</kbd> で前後の作品に移れます。<kbd>Esc</kbd> で閉じます</li>
+<li>「元のポストをXで開く」で、Xの投稿そのものも見られます</li>
+</ul>
+
+<h2 id="round2">二次審査（12/1〜12/6）</h2>
+<p>一次審査が終わると、上に「二次審査（点をつける）」のボタンが出ます。</p>
+<ul>
+<li>一次で選ばれた作品ぜんぶに<b>1〜10pt</b>をつけます</li>
+<li>5を平均にしないで、なるべく1〜10にばらけるようにつけてください</li>
+<li>大きく見ている画面なら、キーボードの<kbd>1</kbd>〜<kbd>9</kbd>と<kbd>0</kbd>（＝10pt）でもつけられます</li>
+<li>点をつけている間は、投稿者の名前が隠れます（人ではなく作品を見るため）</li>
+<li>つけ終わったら「運営に送る」を押してください</li>
+<li class="warn">点数は外に出さないでください（一般チャンネルに貼らない）</li>
+</ul>
+
+<h2 id="device">PCとスマホで続きをやるとき</h2>
+<p>選んだ内容は端末ごとに保存されるので、PCで選んだものはそのままではスマホに出ません。</p>
+<ol>
+<li>「別の端末で続ける」→「引き継ぎコードを作る」</li>
+<li>QRが出るので、スマホのカメラで読む → 続きが開きます</li>
+</ol>
+<p>コードは7日間使えます。</p>
+
+<h2 id="care">気をつけること</h2>
+<ul>
+<li><b>シークレットモードだと保存されません</b></li>
+<li>ブラウザの閲覧データを消すと、選んだ内容も消えます</li>
+<li>心配なときは「選んだ作品を書き出す」でコピーして、どこかにとっておくと安心です（あとで「貼り付けから復元」で戻せます）</li>
+</ul>
+
+<footer>わからないところがあったら、ぷっちーまで気軽に聞いてください！</footer>
+</main>
+</body>
+</html>
